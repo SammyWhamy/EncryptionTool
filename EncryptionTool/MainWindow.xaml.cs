@@ -5,12 +5,10 @@ using Microsoft.Win32;
 using System.Security.Cryptography;
 using System.IO;
 using Ookii.Dialogs.Wpf;
+using System.Drawing;
 
 namespace EncryptionTool
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
         private static MainWindow _instance = null;
@@ -71,8 +69,9 @@ namespace EncryptionTool
             encryptedFile.Write(salt, 0, salt.Length);
             CryptoStream cs = new CryptoStream(encryptedFile, aes.CreateEncryptor(), CryptoStreamMode.Write);
             FileStream fsIn = new FileStream(filePath, FileMode.Open);
-            byte[] buffer = new byte[1048576];
+            byte[] buffer = new byte[128];
             int read;
+
             try
             {
                 while ((read = fsIn.Read(buffer, 0, buffer.Length)) > 0)
@@ -80,6 +79,7 @@ namespace EncryptionTool
                     cs.Write(buffer, 0, read);
                 }
                 fsIn.Close();
+                MessageBox.Show("Successfully Encrypted File", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -135,12 +135,16 @@ namespace EncryptionTool
 
             byte[] buffer = new byte[1048576];
             int read;
+
+            
+
             try
             {
                 while ((read = cs.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     fsOut.Write(buffer, 0, read);
                 }
+                MessageBox.Show("Successfully Decrypted File", "Success", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             catch (Exception ex)
             {
@@ -166,7 +170,7 @@ namespace EncryptionTool
             OpenFileDialog openFileDialog = new OpenFileDialog
             {
                 DefaultExt = ".txt|.aes",
-                Filter = "Input files|*aes;*txt|Plain Text|*txt|Encrypted Files|*aes"
+                Filter = "Input files|*aes;*txt|Plain Text|*txt|Encrypted Files|*aes|All files|*"
             };
             Nullable<bool> result = openFileDialog.ShowDialog();
             if (result == true)
